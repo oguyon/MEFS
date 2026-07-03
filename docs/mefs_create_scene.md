@@ -24,7 +24,7 @@ OPTIONS
   -f, --flux <val>            Total integrated flux (default: 1.0).
   -r, --radius <val>          Outer radius for uniform disk in lambda/D (default: 1.0).
   -s, --sampling <val>        Point spacing in lambda/D (default: 0.1).
-  -x, --xcoord <val>          Planet X coordinate in lambda/D (default: 1.5).
+  -x, --xcoord <val>          Planet X coordinate in lambda/D (default: 1.0).
   -y, --ycoord <val>          Planet Y coordinate in lambda/D (default: 0.0).
   -i, --inclination <val>     Disk inclination angle in degrees (default: 60.0 for exozodi, 0.0 for disk).
   -a, --append                Append generated points to output file instead of overwriting.
@@ -59,7 +59,7 @@ four standard benchmark files in the current working directory:
    - Point Sampling: \(0.1 \lambda/D\) (1,398 point sources).
 4. **`scene.planet.txt`**:
    Represents a point source exoplanet.
-   - Geometry: Single point source, located at \((1.5, 0.0) \lambda/D\).
+   - Geometry: Single point source, located at \((1.0, 0.0) \lambda/D\).
    - Flux: \(1.0\).
 
 ---

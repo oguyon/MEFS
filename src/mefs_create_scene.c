@@ -231,7 +231,7 @@ int main(
                                   200.0, 0.1, 0.0, 0.0, 0.0, 0.0);
         st |= generate_scene_file("scene.exozodi.txt", "exozodi", 0.0, 0.0, 0.0,
                                   200.0, 0.1, 0.15, 3.0, -2.0, 60.0);
-        st |= generate_scene_file("scene.planet.txt", "planet", 1.5, 0.0, 0.0,
+        st |= generate_scene_file("scene.planet.txt", "planet", 1.0, 0.0, 0.0,
                                   1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         if (st == 0)
         {
