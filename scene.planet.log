@@ -1,0 +1,5 @@
+# Params: coro=0.000000 diam=25.600000 grid=512 ifs=1 lens_sz=0.500000 lens_cnt=32 fft=32 pin_dia=2.000000
+Scene Name: planet
+Input Scene File: scene.planet.txt
+Total Input Scene Flux: 1.000000000000000e+00
+IFS Throughput: 7.789520331432117e-01 (77.895203%)
