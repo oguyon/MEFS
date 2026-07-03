@@ -478,10 +478,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-single-source-mode-s-single" class="md-nav__link">
+  <a href="#1-single-source-mode-default" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Single-Source Mode (-s / --single)
+        1. Single-Source Mode (Default)
       
     </span>
   </a>
@@ -693,10 +693,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-single-source-mode-s-single" class="md-nav__link">
+  <a href="#1-single-source-mode-default" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Single-Source Mode (-s / --single)
+        1. Single-Source Mode (Default)
       
     </span>
   </a>
@@ -791,12 +791,12 @@
 
 <h1 id="scene-simulation-mefs_psf">Scene Simulation (<code>mefs_psf</code>)</h1>
 <p>The <code>mefs_psf</code> program is the core simulation engine of the MEFS toolkit. It performs Fourier
-optical propagation of point sources through an unobstructed circular pupil, an optional phase-only
-coronagraph, and an Integral Field Spectrograph (IFS) consisting of a lenslet array, pinhole mask,
-and dispersion optics.</p>
+optical propagation of point sources through an unobstructed circular pupil, an optional starlight
+mode subtraction coronagraph, and an Integral Field Spectrograph (IFS) consisting of a lenslet
+array, pinhole mask, and dispersion optics.</p>
 <hr />
 <h2 id="command-line-options">Command Line Options</h2>
-<p>Run <code>mefs_psf --help</code> to display the unified help page.</p>
+<p>Run <code>mefs_psf --help</code> to display the help page.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>NAME
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  mefs_psf - Fourier optical simulation of coronagraphic PSFs and IFS instruments.
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
@@ -804,25 +804,37 @@ and dispersion optics.</p>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  mefs_psf [OPTIONS]
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>OPTIONS
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  -h, --help                  Show this help message.
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  -s, --single                Run in single on-axis point source mode.
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  -S, --scene [&lt;file&gt;]        Run in scene simulation mode. If file is omitted,
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                              scans and simulates all &#39;scene.*.txt&#39; files.
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  -c, --coro_order &lt;val&gt;      Coronagraph order (0=unobscured, 2, 4, 6, 8, default: 0).
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  -d, --pupil_diam &lt;val&gt;      Pupil diameter in pixels (default: 25.6).
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  -g, --grid_size &lt;val&gt;       Pupil grid size (default: 512).
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  -i &lt;file&gt;                   Input fits file (optional).
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  -o &lt;file&gt;                   Output complex PSF FITS file (default: psf_complex.fits).
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  -p &lt;file&gt;                   Output pupil FITS file (default: pupil.fits).
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  -t &lt;file&gt;                   Output intensity PSF FITS file (default: psf_intensity.fits).
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  -n &lt;num&gt;                    Pupil grid size (default: 512).
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  -d &lt;val&gt;                    Pupil diameter in pixels (default: calculated).
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  -s, --ifs                   Enable the Integral Field Spectrograph (IFS) simulation.
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>  -l, --lenslet_size &lt;val&gt;    Lenslet size in lambda/D (default: 0.5).
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  -n, --lenslet_count &lt;val&gt;   Lenslet grid dimensions (count x count, default: 32).
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>  -p, --pinhole_diam &lt;val&gt;    Pinhole diameter in lambda/D (0=no pinhole, default: 0.0).
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>  -f, --ifs_fft_size &lt;val&gt;    IFS FFT grid size (default: 128).
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>  -m, --ifs_mask &lt;file&gt;       Apply FITS transmission mask to IFS detector output.
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  -m, --lenslet_count &lt;num&gt;   Lenslet grid dimensions (default: 32).
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>  -P, --ifs_fft_size &lt;size&gt;   IFS far-field FFT size per lenslet (default: 32).
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>  -k, --pinhole_diam &lt;val&gt;    Circular pinhole diameter in lambda/dl (default: 2.0).
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>  -x, --source_x &lt;val&gt;        Off-axis source X position in lambda/D (default: 0.0).
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>  -y, --source_y &lt;val&gt;        Off-axis source Y position in lambda/D (default: 0.0).
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>  -c, --coronagraph &lt;val&gt;     Enable coronagraph param (0.0 to 3.0, default: 0.0).
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>  -S, --scene [&lt;file&gt;]        Input ASCII scene file (optional; scans scene.*.txt if blank).
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>  -M, --mefs                  Enable MEFS projection mode (matched filter).
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>  --mefs_x &lt;val&gt;              MEFS reference mode X coordinate in lambda/D (default: 1.0).
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>  --mefs_y &lt;val&gt;              MEFS reference mode Y coordinate in lambda/D (default: 0.0).
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>  --ifs_mask &lt;file&gt;           Path to FITS file containing transmission mask overlay.
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>  --ifs_complex &lt;file&gt;        Output complex IFS FITS file (default: ifs_complex.fits).
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>  --ifs_intensity &lt;file&gt;      Output intensity IFS FITS file (default: ifs_intensity.fits).
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>  --ifs_flux &lt;file&gt;           Output 2D lenslet integrated flux FITS file (default: ifs_flux.fits).
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>  -h, --help                  Show help message.
 </span></code></pre></div>
 <hr />
 <h2 id="simulation-modes">Simulation Modes</h2>
 <p>The program runs in two main modes:</p>
-<h3 id="1-single-source-mode-s-single">1. Single-Source Mode (<code>-s</code> / <code>--single</code>)</h3>
-<p>Simulates a single, on-axis point source. This mode is useful for generating reference coronagraphic
-PSFs, verifying system throughput, or debugging lenslet alignment.</p>
+<h3 id="1-single-source-mode-default">1. Single-Source Mode (Default)</h3>
+<p>When run without scene files, it simulates a single point source centered at coordinates
+specified by <code>--source_x</code> and <code>--source_y</code>. This mode is useful for generating reference
+coronagraphic PSFs, verifying system throughput, or debugging lenslet alignment.</p>
 <h3 id="2-scene-simulation-mode-s-scene">2. Scene Simulation Mode (<code>-S</code> / <code>--scene</code>)</h3>
 <p>Accepts an astronomical scene file containing a list of point sources. Each line in the scene file
 represents a point source with three space-separated values:
@@ -837,10 +849,9 @@ in the file, aggregates the output intensities in memory, and writes:
 <h4 id="batch-scene-mode">Batch Scene Mode</h4>
 <p>If <code>--scene</code> is run <strong>without arguments</strong> (or simply <code>./mefs_psf -S</code>), the program enters batch
 mode:
-1. <strong>Glob Scanning</strong>: Scans the current working directory for files matching <code>scene.*.txt</code> (e.g.
-   <code>scene.star.txt</code>, <code>scene.zodi.txt</code>, <code>scene.exozodi.txt</code>, <code>scene.planet.txt</code>).
-2. <strong>Skip-on-Exist Check</strong>: Checks if the log summary file <code>scene.&lt;name&gt;.log</code> exists. If present,
-   it skips simulating this scene to save computation time.
+1. <strong>Glob Scanning</strong>: Scans the current working directory for files matching <code>scene.*.txt</code>.
+2. <strong>Skip-on-Exist Check</strong>: Checks if the log summary file <code>scene.&lt;name&gt;.log</code> exists. If present and
+   newer than the scene file, it skips simulating this scene.
 3. <strong>Incremental FITS Loading</strong>: When skipping a scene, the program reads the scene's written FITS
    files from disk and adds them to the master sum accumulators, guaranteeing complete and accurate
    combined outputs.
@@ -851,7 +862,7 @@ mode:
 <hr />
 <h2 id="mefs-projection-mode-m-mefs">MEFS Projection Mode (<code>-M</code> / <code>--mefs</code>)</h2>
 <p>The Matched Electric Field Spectrograph (MEFS) mode projects the focal plane complex amplitude
-<span class="arithmatex">\(b\)</span> (electric field) of every simulated point source onto a reference planet mode <span class="arithmatex">\(a\)</span>.</p>
+<span class="arithmatex">\(b\)</span> of every simulated point source onto a reference planet mode <span class="arithmatex">\(a\)</span>.</p>
 <p>The coupled power <span class="arithmatex">\(F\)</span> is calculated via the overlap integral:
 [F = \frac{\left|\sum a_i^* b_i\right|^2}{\sum |a_i|^2}]</p>
 <p>When MEFS mode is active:
@@ -860,8 +871,7 @@ mode:
 - <strong>ASCII Coupling Files</strong>: For each scene, it calculates the coupling efficiency and
   coupled flux for each point, writing them to <code>mefs.&lt;name&gt;.txt</code>.
 - <strong>Log Summary Report</strong>: Once all scenes are computed or loaded, it aggregates the total planet
-  light <span class="arithmatex">\(P\)</span> and total background light <span class="arithmatex">\(B\)</span> (starlight, zodi, exozodi) to calculate the combined
-  spectrograph SNR:
+  light <span class="arithmatex">\(P\)</span> and total background light <span class="arithmatex">\(B\)</span> to calculate the combined spectrograph SNR:
   [SNR = \frac{P}{\sqrt{P + B}}]
   The report is printed to the console and written to <code>mefs.log</code>.
 - <strong>No FITS Files</strong>: MEFS mode bypasses all image creation and does not output any FITS files.</p>
