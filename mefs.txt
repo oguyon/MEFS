@@ -1,0 +1,15 @@
+# Params: coro_param=0.000000 diameter=25.600000 grid_size=512 mefs_x=1.000000 mefs_y=0.000000
+# MEFS Point Source Coupling Data
+# Input Scene File: scene.planet.txt
+# Total Light in Focal Plane (before coupling): 1.000000000000000e+00
+# Total Light Gathered:                         1.000000000000019e+00
+# Average Coupling Efficiency:                  1.000000000000019e+00
+# Format:
+# Col 1: X coordinate (lambda/D)
+# Col 2: Y coordinate (lambda/D)
+# Col 3: Input flux
+# Col 4: Light in focal plane (before coupling)
+# Col 5: Coupling efficiency (0.0 to 1.0)
+# Col 6: Coupled flux
+# ----------------------------------------------------------------------
+    1.0000     0.0000   1.00000000e+00   1.00000000e+00   1.00000000e+00   1.00000000e+00

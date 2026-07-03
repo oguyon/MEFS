@@ -1,0 +1,5 @@
+# Params: coro=0.000000 diam=25.600000 grid=512 ifs=1 lens_sz=0.500000 lens_cnt=32 fft=32 pin_dia=2.000000
+Scene Name: exozodi
+Input Scene File: scene.exozodi.txt
+Total Input Scene Flux: 2.000000000000008e+02
+IFS Throughput: 7.789427118078265e-01 (77.894271%)

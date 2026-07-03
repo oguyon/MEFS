@@ -9,8 +9,13 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(CFITSIO REQUIRED cfitsio)
 pkg_check_modules(FFTW3 REQUIRED fftw3)
 
-# Add executable
-add_executable(mefs_psf src/mefs_psf.c)
+add_executable(mefs_psf
+    src/mefs_psf.c
+    src/mefs_utils.c
+    src/mefs_fits.c
+    src/mefs_optics.c
+    src/mefs_simulation.c
+)
 
 # Include paths
 target_include_directories(mefs_psf PRIVATE
