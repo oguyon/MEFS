@@ -10,6 +10,7 @@
 #include <omp.h>
 #endif
 #include <glob.h>
+#include <sys/stat.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -154,7 +155,7 @@ void print_usage(
            c_green, c_reset);
     printf("  %s--mefs_x%s %s<val>%s            MEFS projection reference mode X coordinate\n",
            c_green, c_reset, c_magenta, c_reset);
-    printf("                       in lambda/D (default: 1.5).\n");
+    printf("                       in lambda/D (default: 1.0).\n");
     printf("  %s--mefs_y%s %s<val>%s            MEFS projection reference mode Y coordinate\n",
            c_green, c_reset, c_magenta, c_reset);
     printf("                       in lambda/D (default: 0.0).\n");
@@ -278,6 +279,47 @@ int solve_linear_system(
     }
 
     return 0;
+}
+
+void get_coronagraph_weights(
+    double coronagraph_param,
+    double *weights)
+{
+    for (int m = 0; m < 6; m++)
+    {
+        weights[m] = 0.0;
+    }
+
+    if (coronagraph_param <= 0.0)
+    {
+        return;
+    }
+
+    if (coronagraph_param <= 1.0)
+    {
+        weights[0] = coronagraph_param;
+    }
+    else if (coronagraph_param <= 2.0)
+    {
+        double x = coronagraph_param - 1.0;
+        weights[0] = 1.0;
+        weights[1] = x;
+        weights[2] = x;
+    }
+    else
+    {
+        double x = coronagraph_param - 2.0;
+        if (x > 1.0)
+        {
+            x = 1.0;
+        }
+        weights[0] = 1.0;
+        weights[1] = 1.0;
+        weights[2] = 1.0;
+        weights[3] = x;
+        weights[4] = x;
+        weights[5] = x;
+    }
 }
 
 /* Generate a 2D complex unobstructed circular pupil with sub-pixel anti-aliasing */
@@ -1092,7 +1134,7 @@ void compute_mefs_reference_mode(
     int                 rows,
     int                 cols,
     double              diameter,
-    int                 coronagraph_order,
+    double              coronagraph_param,
     double              mefs_x,
     double              mefs_y,
     fftw_complex       *mefs_mode)
@@ -1127,13 +1169,19 @@ void compute_mefs_reference_mode(
     }
 
     /* Apply coronagraph subtraction */
-    if (coronagraph_order > 0)
-    {
-        int num_modes = 0;
-        if (coronagraph_order == 1) num_modes = 1;
-        else if (coronagraph_order == 2) num_modes = 3;
-        else if (coronagraph_order == 3) num_modes = 6;
+    double weights[6];
+    get_coronagraph_weights(coronagraph_param, weights);
 
+    int num_modes = 0;
+    if (coronagraph_param > 0.0)
+    {
+        if (coronagraph_param <= 1.0) num_modes = 1;
+        else if (coronagraph_param <= 2.0) num_modes = 3;
+        else num_modes = 6;
+    }
+
+    if (num_modes > 0)
+    {
         double G[36];
         double b_re[6];
         double b_im[6];
@@ -1206,8 +1254,8 @@ void compute_mefs_reference_mode(
                 double sub_im = 0.0;
                 for (int m = 0; m < num_modes; m++)
                 {
-                    sub_re += c_re[m] * val[m] * amp;
-                    sub_im += c_im[m] * val[m] * amp;
+                    sub_re += weights[m] * c_re[m] * val[m] * amp;
+                    sub_im += weights[m] * c_im[m] * val[m] * amp;
                 }
                 curr_pupil[idx_p][0] -= sub_re;
                 curr_pupil[idx_p][1] -= sub_im;
@@ -1239,23 +1287,40 @@ void compute_mefs_reference_mode(
     fftw_free(curr_pupil);
 }
 
+int is_file_newer(
+    const char *file_a,
+    const char *file_b)
+{
+    struct stat stat_a;
+    struct stat stat_b;
+    if (stat(file_a, &stat_a) != 0)
+    {
+        return 0;
+    }
+    if (stat(file_b, &stat_b) != 0)
+    {
+        return 1;
+    }
+    return stat_a.st_mtime > stat_b.st_mtime;
+}
+
 void get_mefs_param_string(
     char   *buf,
     size_t  buf_len,
-    int     coro_order,
+    double  coro_param,
     double  diameter,
     int     grid_size,
     double  mefs_x,
     double  mefs_y)
 {
     snprintf(buf, buf_len,
-             "# Params: coro_order=%d diameter=%.6f grid_size=%d mefs_x=%.6f mefs_y=%.6f",
-             coro_order, diameter, grid_size, mefs_x, mefs_y);
+             "# Params: coro_param=%.6f diameter=%.6f grid_size=%d mefs_x=%.6f mefs_y=%.6f",
+             coro_param, diameter, grid_size, mefs_x, mefs_y);
 }
 
 int check_mefs_file_parameters(
     const char *filename,
-    int         coro_order,
+    double      coro_param,
     double      diameter,
     int         grid_size,
     double      mefs_x,
@@ -1268,7 +1333,7 @@ int check_mefs_file_parameters(
     }
 
     char expected[256];
-    get_mefs_param_string(expected, sizeof(expected), coro_order,
+    get_mefs_param_string(expected, sizeof(expected), coro_param,
                           diameter, grid_size, mefs_x, mefs_y);
 
     char line[256];
@@ -1288,7 +1353,7 @@ int check_mefs_file_parameters(
 void get_scene_param_string(
     char   *buf,
     size_t  buf_len,
-    int     coro_order,
+    double  coro_param,
     double  diameter,
     int     grid_size,
     int     enable_ifs,
@@ -1298,15 +1363,15 @@ void get_scene_param_string(
     double  pinhole_diam)
 {
     snprintf(buf, buf_len,
-             "# Params: coro=%d diam=%.6f grid=%d ifs=%d lens_sz=%.6f "
+             "# Params: coro=%.6f diam=%.6f grid=%d ifs=%d lens_sz=%.6f "
              "lens_cnt=%d fft=%d pin_dia=%.6f",
-             coro_order, diameter, grid_size, enable_ifs, lenslet_size,
+             coro_param, diameter, grid_size, enable_ifs, lenslet_size,
              lenslet_count, ifs_fft_size, pinhole_diam);
 }
 
 int check_scene_file_parameters(
     const char *filename,
-    int         coro_order,
+    double      coro_param,
     double      diameter,
     int         grid_size,
     int         enable_ifs,
@@ -1322,7 +1387,7 @@ int check_scene_file_parameters(
     }
 
     char expected[256];
-    get_scene_param_string(expected, sizeof(expected), coro_order, diameter,
+    get_scene_param_string(expected, sizeof(expected), coro_param, diameter,
                            grid_size, enable_ifs, lenslet_size,
                            lenslet_count, ifs_fft_size, pinhole_diam);
 
@@ -1340,17 +1405,20 @@ int check_scene_file_parameters(
     return 0;
 }
 
-/* Load coupled flux sum from a previously computed MEFS ASCII file */
-double load_mefs_coupled_flux(
-    const char *filename)
+/* Load both uncoupled and coupled flux sums from a previously computed MEFS ASCII file */
+int load_mefs_scene_data(
+    const char *filename,
+    double     *out_uncoupled,
+    double     *out_coupled)
 {
     FILE *f = fopen(filename, "r");
     if (f == NULL)
     {
-        return 0.0;
+        return 0;
     }
 
-    double sum = 0.0;
+    double sum_uncoupled = 0.0;
+    double sum_coupled = 0.0;
     char line[256];
     while (fgets(line, sizeof(line), f))
     {
@@ -1359,14 +1427,17 @@ double load_mefs_coupled_flux(
             continue;
         }
 
-        double x, y, flux, eff, coupled;
-        if (sscanf(line, "%lf %lf %lf %lf %lf", &x, &y, &flux, &eff, &coupled) == 5)
+        double x, y, flux, uncoupled, eff, coupled;
+        if (sscanf(line, "%lf %lf %lf %lf %lf %lf", &x, &y, &flux, &uncoupled, &eff, &coupled) == 6)
         {
-            sum += coupled;
+            sum_uncoupled += uncoupled;
+            sum_coupled += coupled;
         }
     }
     fclose(f);
-    return sum;
+    *out_uncoupled = sum_uncoupled;
+    *out_coupled = sum_coupled;
+    return 1;
 }
 
 /* Light-weight scene simulation specifically optimized for MEFS coupling */
@@ -1378,10 +1449,11 @@ int run_mefs_scene_simulation(
     int           cols,
     double        diameter,
     int           grid_size,
-    int           coronagraph_order,
+    double        coronagraph_param,
     double        mefs_x,
     double        mefs_y,
     double        init_pupil_energy,
+    double       *out_total_uncoupled_flux,
     double       *out_total_coupled_flux)
 {
     FILE *sf = fopen(scene_path, "r");
@@ -1454,7 +1526,7 @@ int run_mefs_scene_simulation(
     /* Compute reference mode */
     fftw_complex *mefs_mode = fftw_alloc_complex(rows * cols);
     compute_mefs_reference_mode(pupil, rows, cols, diameter,
-                                coronagraph_order, mefs_x, mefs_y, mefs_mode);
+                                coronagraph_param, mefs_x, mefs_y, mefs_mode);
 
     double mefs_mode_norm = 0.0;
     for (int ii = 0; ii < rows * cols; ii++)
@@ -1490,6 +1562,7 @@ int run_mefs_scene_simulation(
 
     double *coupled_fluxes = calloc(scene_src_count, sizeof(double));
     double *efficiencies = calloc(scene_src_count, sizeof(double));
+    double *uncoupled_fluxes = calloc(scene_src_count, sizeof(double));
 
     int progress_counter = 0;
 
@@ -1535,13 +1608,19 @@ int run_mefs_scene_simulation(
             }
         }
 
-        if (coronagraph_order > 0)
-        {
-            int num_modes = 0;
-            if (coronagraph_order == 1) num_modes = 1;
-            else if (coronagraph_order == 2) num_modes = 3;
-            else if (coronagraph_order == 3) num_modes = 6;
+        double weights[6];
+        get_coronagraph_weights(coronagraph_param, weights);
 
+        int num_modes = 0;
+        if (coronagraph_param > 0.0)
+        {
+            if (coronagraph_param <= 1.0) num_modes = 1;
+            else if (coronagraph_param <= 2.0) num_modes = 3;
+            else num_modes = 6;
+        }
+
+        if (num_modes > 0)
+        {
             double G[36];
             double b_re[6];
             double b_im[6];
@@ -1616,8 +1695,8 @@ int run_mefs_scene_simulation(
                     double sub_im = 0.0;
                     for (int m = 0; m < num_modes; m++)
                     {
-                        sub_re += c_re[m] * val[m] * amp;
-                        sub_im += c_im[m] * val[m] * amp;
+                        sub_re += weights[m] * c_re[m] * val[m] * amp;
+                        sub_im += weights[m] * c_im[m] * val[m] * amp;
                     }
                     curr_pupil[idx_p][0] -= sub_re;
                     curr_pupil[idx_p][1] -= sub_im;
@@ -1665,6 +1744,25 @@ int run_mefs_scene_simulation(
         efficiencies[s] = eff;
         coupled_fluxes[s] = eff * sflux * mefs_mode_norm_phys;
 
+        double post_coro_energy = init_pupil_energy;
+        if (coronagraph_param > 0.0)
+        {
+            post_coro_energy = 0.0;
+            for (int ii = 0; ii < rows * cols; ii++)
+            {
+                double r = curr_pupil[ii][0];
+                double im = curr_pupil[ii][1];
+                post_coro_energy += r * r + im * im;
+            }
+        }
+
+        double uncoupled_flux = 0.0;
+        if (init_pupil_energy > 0.0)
+        {
+            uncoupled_flux = sflux * (post_coro_energy / init_pupil_energy);
+        }
+        uncoupled_fluxes[s] = uncoupled_flux;
+
         fftw_free(curr_pupil);
 
         int my_progress;
@@ -1700,38 +1798,61 @@ int run_mefs_scene_simulation(
     else
     {
         char param_buf[256];
-        get_mefs_param_string(param_buf, sizeof(param_buf), coronagraph_order,
+        get_mefs_param_string(param_buf, sizeof(param_buf), coronagraph_param,
                               diameter, grid_size, mefs_x, mefs_y);
         fprintf(of, "%s\n", param_buf);
         fprintf(of, "# MEFS Point Source Coupling Data\n");
         fprintf(of, "# Input Scene File: %s\n", scene_path);
+        double total_uncoupled_flux = 0.0;
+        double total_coupled_flux = 0.0;
+        for (int s = 0; s < scene_src_count; s++)
+        {
+            total_uncoupled_flux += uncoupled_fluxes[s];
+            total_coupled_flux += coupled_fluxes[s];
+        }
+        double avg_eff = 0.0;
+        if (total_uncoupled_flux > 0.0)
+        {
+            avg_eff = total_coupled_flux / total_uncoupled_flux;
+        }
+        fprintf(of, "# Total Light in Focal Plane (before coupling): %.15e\n",
+                total_uncoupled_flux);
+        fprintf(of, "# Total Light Gathered:                         %.15e\n",
+                total_coupled_flux);
+        fprintf(of, "# Average Coupling Efficiency:                  %.15e\n",
+                avg_eff);
         fprintf(of, "# Format:\n");
         fprintf(of, "# Col 1: X coordinate (lambda/D)\n");
         fprintf(of, "# Col 2: Y coordinate (lambda/D)\n");
         fprintf(of, "# Col 3: Input flux\n");
-        fprintf(of, "# Col 4: Coupling efficiency (0.0 to 1.0)\n");
-        fprintf(of, "# Col 5: Coupled flux\n");
+        fprintf(of, "# Col 4: Light in focal plane (before coupling)\n");
+        fprintf(of, "# Col 5: Coupling efficiency (0.0 to 1.0)\n");
+        fprintf(of, "# Col 6: Coupled flux\n");
         fprintf(of, "# ----------------------------------------------------------------------\n");
 
         for (int s = 0; s < scene_src_count; s++)
         {
-            fprintf(of, "%10.4f %10.4f %16.8e %16.8e %16.8e\n",
+            fprintf(of, "%10.4f %10.4f %16.8e %16.8e %16.8e %16.8e\n",
                     scene_src_x[s], scene_src_y[s], scene_src_flux[s],
-                    efficiencies[s], coupled_fluxes[s]);
+                    uncoupled_fluxes[s], efficiencies[s], coupled_fluxes[s]);
         }
         fclose(of);
         printf("Successfully wrote MEFS coupling data to: %s\n", mefs_out);
     }
 
+    double total_uncoupled_flux = 0.0;
     double total_coupled_flux = 0.0;
     for (int s = 0; s < scene_src_count; s++)
     {
+        total_uncoupled_flux += uncoupled_fluxes[s];
         total_coupled_flux += coupled_fluxes[s];
     }
+    *out_total_uncoupled_flux = total_uncoupled_flux;
     *out_total_coupled_flux = total_coupled_flux;
 
     free(efficiencies);
     free(coupled_fluxes);
+    free(uncoupled_fluxes);
     fftw_free(mefs_mode);
 
     for (int t = 0; t < num_threads; t++)
@@ -1768,7 +1889,7 @@ int run_scene_simulation_file(
     int           ifs_fft_size,
     double        pinhole_diam_ldl,
     const char   *ifs_mask_file,
-    int           coronagraph_order,
+    double        coronagraph_param,
     double        init_pupil_energy,
     int           run_mefs_mode,
     double        mefs_x,
@@ -1889,7 +2010,7 @@ int run_scene_simulation_file(
                mefs_x, mefs_y);
         mefs_mode = fftw_alloc_complex(rows * cols);
         compute_mefs_reference_mode(pupil, rows, cols, diameter,
-                                    coronagraph_order, mefs_x, mefs_y, mefs_mode);
+                                    coronagraph_param, mefs_x, mefs_y, mefs_mode);
 
         mefs_mode_psf_intensity = calloc(rows * cols, sizeof(double));
         for (int ii = 0; ii < rows * cols; ii++)
@@ -2078,13 +2199,19 @@ int run_scene_simulation_file(
         }
 
         /* Apply idealized perfect coronagraph projection subtraction if enabled */
-        if (coronagraph_order > 0)
-        {
-            int num_modes = 0;
-            if (coronagraph_order == 1) num_modes = 1;
-            else if (coronagraph_order == 2) num_modes = 3;
-            else if (coronagraph_order == 3) num_modes = 6;
+        double weights[6];
+        get_coronagraph_weights(coronagraph_param, weights);
 
+        int num_modes = 0;
+        if (coronagraph_param > 0.0)
+        {
+            if (coronagraph_param <= 1.0) num_modes = 1;
+            else if (coronagraph_param <= 2.0) num_modes = 3;
+            else num_modes = 6;
+        }
+
+        if (num_modes > 0)
+        {
             double G[36];
             double b_re[6];
             double b_im[6];
@@ -2170,8 +2297,8 @@ int run_scene_simulation_file(
                     double sub_im = 0.0;
                     for (int m = 0; m < num_modes; m++)
                     {
-                        sub_re += c_re[m] * val[m] * amp;
-                        sub_im += c_im[m] * val[m] * amp;
+                        sub_re += weights[m] * c_re[m] * val[m] * amp;
+                        sub_im += weights[m] * c_im[m] * val[m] * amp;
                     }
 
                     curr_pupil[idx_p][0] -= sub_re;
@@ -2295,7 +2422,7 @@ int run_scene_simulation_file(
     /* Report coronagraph throughput if enabled */
     double total_init_pupil_energy = init_pupil_energy * total_scene_flux;
     double coronagraph_throughput = 0.0;
-    if (coronagraph_order > 0)
+    if (coronagraph_param > 0.0)
     {
         if (total_init_pupil_energy > 0.0)
         {
@@ -2422,14 +2549,14 @@ int run_scene_simulation_file(
         if (lf != NULL)
         {
             char param_buf[256];
-            get_scene_param_string(param_buf, sizeof(param_buf), coronagraph_order,
+            get_scene_param_string(param_buf, sizeof(param_buf), coronagraph_param,
                                   diameter, grid_size, enable_ifs, lenslet_size_ld,
                                   lenslet_count, ifs_fft_size, pinhole_diam_ldl);
             fprintf(lf, "%s\n", param_buf);
             fprintf(lf, "Scene Name: %s\n", name_suffix);
             fprintf(lf, "Input Scene File: %s\n", scene_path);
             fprintf(lf, "Total Input Scene Flux: %.15e\n", total_scene_flux);
-            if (coronagraph_order > 0)
+            if (coronagraph_param > 0.0)
             {
                 fprintf(lf, "Coronagraph Throughput: %.15e (%.6f%%)\n",
                         coronagraph_throughput, coronagraph_throughput * 100.0);
@@ -2527,7 +2654,7 @@ int main(
 
     double source_x = 0.0;
     double source_y = 0.0;
-    int coronagraph_order = 0;
+    double coronagraph_param = 0.0;
 
     int grid_size = 512;
     double diameter = -1.0;
@@ -2536,7 +2663,7 @@ int main(
     int run_scene_mode = 0;
 
     int run_mefs_mode = 0;
-    double mefs_x = 1.5;
+    double mefs_x = 1.0;
     double mefs_y = 0.0;
 
     static struct option long_options[] = {
@@ -2637,10 +2764,11 @@ int main(
                 source_y = atof(optarg);
                 break;
             case 'c':
-                coronagraph_order = atoi(optarg);
-                if (coronagraph_order < 1 || coronagraph_order > 3)
+                coronagraph_param = atof(optarg);
+                if (coronagraph_param < 0.0 || coronagraph_param > 3.0)
                 {
-                    fprintf(stderr, "ERROR: Coronagraph order must be 1, 2, or 3.\n");
+                    fprintf(stderr,
+                            "ERROR: Coronagraph param must be between 0.0 and 3.0.\n");
                     return 1;
                 }
                 break;
@@ -2751,11 +2879,12 @@ int main(
         {
             if (scene_file != NULL)
             {
+                double total_uncoupled = 0.0;
                 double total_coupled = 0.0;
                 int status = run_mefs_scene_simulation(
                     scene_file, NULL, pupil, rows, cols, diameter,
-                    grid_size, coronagraph_order, mefs_x, mefs_y,
-                    init_pupil_energy, &total_coupled);
+                    grid_size, coronagraph_param, mefs_x, mefs_y,
+                    init_pupil_energy, &total_uncoupled, &total_coupled);
                 fftw_free(pupil);
                 return status;
             }
@@ -2773,6 +2902,7 @@ int main(
                 }
 
                 char scene_names[100][256];
+                double scene_uncoupled_fluxes[100];
                 double scene_coupled_fluxes[100];
                 int num_scenes = 0;
 
@@ -2797,26 +2927,29 @@ int main(
                         char mefs_out[512];
                         snprintf(mefs_out, sizeof(mefs_out), "mefs.%s.txt", name);
 
+                        double uncoupled_flux = 0.0;
                         double coupled_flux = 0.0;
-                        if (check_mefs_file_parameters(mefs_out, coronagraph_order,
-                                                       diameter, grid_size, mefs_x, mefs_y))
+                        if (check_mefs_file_parameters(mefs_out, coronagraph_param,
+                                                       diameter, grid_size, mefs_x, mefs_y) &&
+                            !is_file_newer(filename, mefs_out))
                         {
                             printf("Skipping MEFS scene %s: cached parameters match. "
                                    "Loading existing coupling data...\n",
                                    name);
-                            coupled_flux = load_mefs_coupled_flux(mefs_out);
+                            load_mefs_scene_data(mefs_out, &uncoupled_flux, &coupled_flux);
                         }
                         else
                         {
                             printf("Processing MEFS scene: %s (%s)...\n", name, filename);
                             run_mefs_scene_simulation(
                                 filename, name, pupil, rows, cols, diameter,
-                                grid_size, coronagraph_order, mefs_x, mefs_y,
-                                init_pupil_energy, &coupled_flux);
+                                grid_size, coronagraph_param, mefs_x, mefs_y,
+                                init_pupil_energy, &uncoupled_flux, &coupled_flux);
                         }
 
                         strncpy(scene_names[num_scenes], name, 255);
                         scene_names[num_scenes][255] = '\0';
+                        scene_uncoupled_fluxes[num_scenes] = uncoupled_flux;
                         scene_coupled_fluxes[num_scenes] = coupled_flux;
                         num_scenes++;
                     }
@@ -2826,8 +2959,10 @@ int main(
                 fftw_free(pupil);
 
                 /* Generate MEFS Spectrograph Report */
-                double planet_light = 0.0;
-                double background_light = 0.0;
+                double planet_focal_light = 0.0;
+                double planet_coupled_light = 0.0;
+                double background_focal_light = 0.0;
+                double background_coupled_light = 0.0;
 
                 printf("\n========================================================\n");
                 printf("MEFS Spectrograph Summary Report\n");
@@ -2835,28 +2970,56 @@ int main(
 
                 for (int i = 0; i < num_scenes; i++)
                 {
-                    printf("  %s scene coupled light: %.6e\n",
-                           scene_names[i], scene_coupled_fluxes[i]);
+                    double u_flux = scene_uncoupled_fluxes[i];
+                    double c_flux = scene_coupled_fluxes[i];
+                    double eff = 0.0;
+                    if (u_flux > 0.0)
+                    {
+                        eff = c_flux / u_flux;
+                    }
+
+                    printf("  %s scene:\n", scene_names[i]);
+                    printf("    Light in Focal Plane (before coupling): %.6e\n", u_flux);
+                    printf("    Coupled Light Gathered:                 %.6e\n", c_flux);
+                    printf("    Average Coupling Efficiency:            %.6f (%.4f%%)\n",
+                           eff, eff * 100.0);
+
                     if (strcmp(scene_names[i], "planet") == 0)
                     {
-                        planet_light = scene_coupled_fluxes[i];
+                        planet_focal_light = u_flux;
+                        planet_coupled_light = c_flux;
                     }
                     else
                     {
-                        background_light += scene_coupled_fluxes[i];
+                        background_focal_light += u_flux;
+                        background_coupled_light += c_flux;
                     }
                 }
 
-                double total_light = planet_light + background_light;
+                double total_coupled_light = planet_coupled_light + background_coupled_light;
                 double snr = 0.0;
-                if (total_light > 0.0)
+                if (total_coupled_light > 0.0)
                 {
-                    snr = planet_light / sqrt(total_light);
+                    snr = planet_coupled_light / sqrt(total_coupled_light);
+                }
+
+                double planet_avg_eff = 0.0;
+                if (planet_focal_light > 0.0)
+                {
+                    planet_avg_eff = planet_coupled_light / planet_focal_light;
+                }
+
+                double bg_avg_eff = 0.0;
+                if (background_focal_light > 0.0)
+                {
+                    bg_avg_eff = background_coupled_light / background_focal_light;
                 }
 
                 printf("--------------------------------------------------------\n");
-                printf("  Planet Light Gathered:      %.6e\n", planet_light);
-                printf("  Total Background Light:     %.6e\n", background_light);
+                printf("  Planet Light Gathered:      %.6e (avg eff: %.4f%%)\n",
+                       planet_coupled_light, planet_avg_eff * 100.0);
+                printf("  Total Background Light:     %.6e (avg eff: %.4f%%)\n",
+                       background_coupled_light, bg_avg_eff * 100.0);
                 printf("  Combined Spectrograph SNR:  %.6e\n", snr);
                 printf("========================================================\n\n");
 
@@ -2867,11 +3030,20 @@ int main(
                     fprintf(lf, "# MEFS Spectrograph Summary Report\n");
                     for (int i = 0; i < num_scenes; i++)
                     {
-                        fprintf(lf, "Coupled Light (%s): %.15e\n",
-                                scene_names[i], scene_coupled_fluxes[i]);
+                        double u_flux = scene_uncoupled_fluxes[i];
+                        double c_flux = scene_coupled_fluxes[i];
+                        double eff = 0.0;
+                        if (u_flux > 0.0)
+                        {
+                            eff = c_flux / u_flux;
+                        }
+                        fprintf(lf, "Scene: %s\n", scene_names[i]);
+                        fprintf(lf, "  Focal Plane Light: %.15e\n", u_flux);
+                        fprintf(lf, "  Coupled Light:     %.15e\n", c_flux);
+                        fprintf(lf, "  Average Efficiency: %.15e\n", eff);
                     }
-                    fprintf(lf, "Planet Light Gathered: %.15e\n", planet_light);
-                    fprintf(lf, "Total Background Light: %.15e\n", background_light);
+                    fprintf(lf, "Planet Light Gathered: %.15e\n", planet_coupled_light);
+                    fprintf(lf, "Total Background Light: %.15e\n", background_coupled_light);
                     fprintf(lf, "Combined Spectrograph SNR: %.15e\n", snr);
                     fclose(lf);
                     printf("Successfully saved MEFS report to: mefs.log\n");
@@ -2888,7 +3060,7 @@ int main(
                     scene_file, NULL, pupil, rows, cols, diameter,
                     grid_size, enable_ifs, lenslet_size_ld,
                     lenslet_count, ifs_fft_size, pinhole_diam_ldl,
-                    ifs_mask_file, coronagraph_order, init_pupil_energy,
+                    ifs_mask_file, coronagraph_param, init_pupil_energy,
                     run_mefs_mode, mefs_x, mefs_y);
                 fftw_free(pupil);
                 return status;
@@ -2948,10 +3120,11 @@ int main(
                         snprintf(ifsraw_out, sizeof(ifsraw_out), "ifsraw_im.%s.fits", name);
                         snprintf(ifs_out, sizeof(ifs_out), "ifs_im.%s.fits", name);
 
-                        if (check_scene_file_parameters(log_out, coronagraph_order,
+                        if (check_scene_file_parameters(log_out, coronagraph_param,
                                                         diameter, grid_size, enable_ifs,
                                                         lenslet_size_ld, lenslet_count,
-                                                        ifs_fft_size, pinhole_diam_ldl))
+                                                        ifs_fft_size, pinhole_diam_ldl) &&
+                            !is_file_newer(filename, log_out))
                         {
                             printf("Skipping scene %s: cached parameters match. "
                                    "Loading existing FITS images to sum...\n",
@@ -3007,7 +3180,7 @@ int main(
                             filename, name, pupil, rows, cols, diameter,
                             grid_size, enable_ifs, lenslet_size_ld,
                             lenslet_count, ifs_fft_size, pinhole_diam_ldl,
-                            ifs_mask_file, coronagraph_order, init_pupil_energy,
+                            ifs_mask_file, coronagraph_param, init_pupil_energy,
                             run_mefs_mode, mefs_x, mefs_y);
 
                         /* Read and accumulate from the newly written files */
@@ -3119,12 +3292,19 @@ int main(
             }
         }
 
-        if (coronagraph_order > 0)
+        double weights[6];
+        get_coronagraph_weights(coronagraph_param, weights);
+
+        int num_modes = 0;
+        if (coronagraph_param > 0.0)
         {
-            int num_modes = 0;
-            if (coronagraph_order == 1) num_modes = 1;
-            else if (coronagraph_order == 2) num_modes = 3;
-            else if (coronagraph_order == 3) num_modes = 6;
+            if (coronagraph_param <= 1.0) num_modes = 1;
+            else if (coronagraph_param <= 2.0) num_modes = 3;
+            else num_modes = 6;
+        }
+
+        if (num_modes > 0)
+        {
 
             double G[36];
             double b_re[6];
@@ -3198,8 +3378,8 @@ int main(
                     double sub_im = 0.0;
                     for (int m = 0; m < num_modes; m++)
                     {
-                        sub_re += c_re[m] * val[m] * amp;
-                        sub_im += c_im[m] * val[m] * amp;
+                        sub_re += weights[m] * c_re[m] * val[m] * amp;
+                        sub_im += weights[m] * c_im[m] * val[m] * amp;
                     }
                     pupil[idx_p][0] -= sub_re;
                     pupil[idx_p][1] -= sub_im;
@@ -3228,7 +3408,7 @@ int main(
                mefs_x, mefs_y);
         fftw_complex *mefs_mode = fftw_alloc_complex(rows * cols);
         compute_mefs_reference_mode(untilted_pupil_mefs, rows, cols, diameter,
-                                    coronagraph_order, mefs_x, mefs_y, mefs_mode);
+                                    coronagraph_param, mefs_x, mefs_y, mefs_mode);
 
         double mefs_mode_norm = 0.0;
         double r_sum = 0.0;
@@ -3309,14 +3489,21 @@ int main(
     }
 
     /* Apply idealized perfect coronagraph subtraction if enabled */
-    if (coronagraph_order > 0)
+    double weights[6];
+    get_coronagraph_weights(coronagraph_param, weights);
+
+    int num_modes = 0;
+    if (coronagraph_param > 0.0)
     {
         printf("Applying idealized perfect coronagraph projection subtraction "
-               "(Order %d)...\n", coronagraph_order);
-        int num_modes = 0;
-        if (coronagraph_order == 1) num_modes = 1;
-        else if (coronagraph_order == 2) num_modes = 3;
-        else if (coronagraph_order == 3) num_modes = 6;
+               "(Param %.6f)...\n", coronagraph_param);
+        if (coronagraph_param <= 1.0) num_modes = 1;
+        else if (coronagraph_param <= 2.0) num_modes = 3;
+        else num_modes = 6;
+    }
+
+    if (num_modes > 0)
+    {
 
         double G[36];
         double b_re[6];
@@ -3419,8 +3606,8 @@ int main(
                 double sub_im = 0.0;
                 for (int m = 0; m < num_modes; m++)
                 {
-                    sub_re += c_re[m] * val[m] * amp;
-                    sub_im += c_im[m] * val[m] * amp;
+                    sub_re += weights[m] * c_re[m] * val[m] * amp;
+                    sub_im += weights[m] * c_im[m] * val[m] * amp;
                 }
 
                 pupil[idx][0] -= sub_re;
