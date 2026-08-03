@@ -85,15 +85,4 @@ An analysis and evaluation utility:
 * Translates pixel coordinates using WCS headers to match planet locations.
 * Grades detection metrics and produces an intensity-ordered contrast score list (`score.txt`).
 
----
 
-## 4. Current Status & On-Sky Demonstrations
-
-The technology behind MEFS is actively developed and tested at the **Subaru Telescope** using the
-**SCExAO** instrument:
-* **GLINT (Guided Light Interferometric Nulling Technology)**: On-sky demonstrations (as of May 2025)
-  have validated photonic nulling, wavefront sensing, and closed-loop operation using chip-based
-  tricouplers with high throughput ($\sim 80\%$).
-* **FIRST / Photonic Lantern**: Demonstrated sub-diffraction-limited astronomical measurements
-  through photonic lantern coupling and spatial-spectral self-calibration on-sky (*Yoo Jung Kim et
-  al. 2025 ApJL*).
