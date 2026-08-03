@@ -13,9 +13,8 @@ for high-contrast imaging and high-resolution spectroscopy of exoplanets. It tar
 missions like the **Habitable Worlds Observatory (HWO)** and ground-based Extremely Large
 Telescopes (ELTs).
 
-MEFS utilizes a **2-stage system** that combines a conventional coronagraph with a **Photonic
-Integrated Circuit (PIC) spectrograph** using a **photonic lantern (PL)** and a **photonic nulling
-chip (PNC)**.
+MEFS utilizes a **2-stage system** that combines a conventional coronagraph with a **photonics
+stage** using a **photonic lantern** and/or **photonic chip** for nulling and modal decomposition.
 
 ```mermaid
 graph TD
@@ -35,10 +34,11 @@ stability. MEFS relaxes these constraints using a hybrid approach:
 
 1. **Stage 1 (Coronagraph)**: Suppresses the bulk of the starlight to a moderate level ($\sim 10^{-7}$
    contrast reduction).
-2. **Stage 2 (Photonic Integrated Circuit)**: Couples the residual light into a photonic lantern
-   and nulling chip, relaxing the PIC contrast requirement to only $\sim 10^{-2}$ to $10^{-3}$.
-   This decreases the required Field of View (FOV) to $\sim 2\ \lambda/D$, reducing the number of
-   spatial channels by $\sim 25\times$ and allowing for broad band spectral multiplexing.
+2. **Stage 2 (Photonics)**: Couples the residual light into a photonic lantern and/or photonic
+   chip for nulling and modal decomposition, relaxing the contrast requirement to only
+   $\sim 10^{-2}$ to $10^{-3}$. This decreases the required Field of View (FOV) to
+   $\sim 2\ \lambda/D$, reducing the number of spatial channels by $\sim 25\times$ and allowing
+   for broad band spectral multiplexing.
 
 ---
 
@@ -75,7 +75,7 @@ A scene generator that constructs astronomical targets as collections of point s
 A multi-threaded, OpenMP-accelerated physical optics propagator:
 * Simulates wavefront propagation through custom pupil designs and coronagraph layouts.
 * Simulates the Integral Field Spectrograph (IFS) lenslet array and pinhole masks.
-* Performs matched-filter MEFS projection mode simulations to model PIC coupling coefficients.
+* Performs matched-filter MEFS projection mode simulations to model photonic coupling coefficients.
 * Integrates World Coordinate System (WCS) headers directly into output FITS arrays.
 * Supports incremental batch runs (skipping pre-computed files while maintaining correct sums).
 

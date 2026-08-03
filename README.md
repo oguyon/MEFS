@@ -15,10 +15,10 @@ and high-precision wavefront self-calibration:
 
 1. **Stage 1 (Coronagraph)**: Suppresses the bulk of the host starlight ($\sim 10^7$ contrast),
    relaxing requirements on the second stage and narrowing the field of view (FOV) to $\sim 2 \lambda/D$.
-2. **Stage 2 (Photonic Integrated Circuit - PIC)**: Utilizes a **Photonic Lantern (PL)** and
-   **Photonic Nulling Chip (PNC)** to null residual starlight, decompose electric field modes,
-   and route planet light directly to the science spectrograph while sending residual starlight to
-   wavefront sensors (WFS) for closed-loop control and self-calibration.
+2. **Stage 2 (Photonics)**: Uses a **photonic lantern** and/or **photonic chip** to null
+   residual starlight, decompose electric field modes, and route planet light to the science
+   spectrograph while sending residual starlight to wavefront sensors (WFS) for closed-loop
+   control and self-calibration.
 
 This spatial-spectral modal decomposition distinguishes exoplanet light from starlight speckles
 at the science detector, achieving extreme precision ($\sim 50\ \mu\text{as}$ per spectral bin).
