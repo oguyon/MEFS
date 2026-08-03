@@ -98,14 +98,4 @@ inclined) is found by setting the CDF to \(0.5\):
 This statistical median inclination of **\(60.0^{\circ}\)** is adopted as the physical default
 for exozodi simulations.
 
----
 
-## 6. On-Sky Prototyping & SCExAO Status
-
-MEFS technology is actively developed and validated on-sky via the **SCExAO** instrument on the
-Subaru Telescope:
-* **GLINT (Photonic Nulling)**: Successfully demonstrated active phase control, closed-loop
-  WFS/C operations, and $>80\%$ through-chip transmission using phase shifters and tricouplers
-  (May 2025).
-* **FIRST / Photonic Lantern**: Demonstrated spatial-spectral modal decomposition and
-  self-calibration, achieving sub-diffraction-limited measurements (*Yoo Jung Kim et al. 2025 ApJL*).
