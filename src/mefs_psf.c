@@ -130,6 +130,55 @@ void print_usage(
     printf("     %s$%s %s%s -S scene.txt -s -M%s\n\n",
            c_grey, c_reset, c_b_green, prog_name, c_reset);
 
+    printf("%sOUTPUT FILES%s\n", c_cyan, c_reset);
+    printf("  %sSingle-source mode:%s\n",
+           c_bold, c_reset);
+    printf("    %spupil.fits%s              "
+           "Pupil plane complex wavefront\n",
+           c_yellow, c_reset);
+    printf("    %spsf_complex.fits%s        "
+           "Focal plane complex amplitude\n",
+           c_yellow, c_reset);
+    printf("    %spsf_intensity.fits%s      "
+           "Focal plane intensity (|E|^2)\n",
+           c_yellow, c_reset);
+
+    printf("  %sIFS mode (-s):%s\n",
+           c_bold, c_reset);
+    printf("    %sifs_complex.fits%s        "
+           "IFS detector complex amplitude\n",
+           c_yellow, c_reset);
+    printf("    %sifs_intensity.fits%s      "
+           "IFS detector intensity\n",
+           c_yellow, c_reset);
+    printf("    %sifs_flux.fits%s           "
+           "Lenslet-integrated flux array\n",
+           c_yellow, c_reset);
+
+    printf("  %sScene batch mode (-S):%s\n",
+           c_bold, c_reset);
+    printf("    %spsf_im.<name>.fits%s      "
+           "Per-scene PSF intensity\n",
+           c_yellow, c_reset);
+    printf("    %sifsraw_im.<name>.fits%s   "
+           "Per-scene raw IFS detector\n",
+           c_yellow, c_reset);
+    printf("    %sifs_im.<name>.fits%s      "
+           "Per-scene IFS flux (with WCS)\n",
+           c_yellow, c_reset);
+    printf("    %spsf_im.scenesum.fits%s    "
+           "Combined PSF sum over all scenes\n",
+           c_yellow, c_reset);
+    printf("    %sifsraw_im.scenesum.fits%s "
+           "Combined raw IFS sum\n",
+           c_yellow, c_reset);
+    printf("    %sifs_im.scenesum.fits%s    "
+           "Combined IFS flux sum (with WCS)\n",
+           c_yellow, c_reset);
+    printf("    %sscene.<name>.log%s        "
+           "Per-scene processing log\n\n",
+           c_yellow, c_reset);
+
     printf("%sCOLOR MODE%s\n", c_cyan, c_reset);
     printf("  Colors: %s%s%s. Set %sNO_COLOR%s env var to disable "
            "(see https://no-color.org).\n",
