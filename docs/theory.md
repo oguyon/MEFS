@@ -2,7 +2,8 @@
 
 This page outlines the physical, optical, and statistical concepts implemented in the MEFS toolkit,
 incorporating the two-stage starlight suppression strategy, photonic nulling, and wavefront
-self-calibration.
+self-calibration. Stage 2 of the suppression can be realized with a photonic lantern and/or
+photonic chip.
 
 ---
 
@@ -23,10 +24,10 @@ In the MEFS instrument architecture:
 
 ---
 
-## 2. Stage 2: Photonic Integrated Circuit (PIC)
+## 2. Stage 2: Photonics
 
-Stage 2 performs fine nulling and modal decomposition using a **Photonic Lantern (PL)** and
-**Photonic Nulling Chip (PNC)**:
+Stage 2 performs fine nulling and modal decomposition using a **photonic lantern** and/or
+**photonic chip**:
 
 1. **Photonic Lantern (PL)**: A multi-mode interface is injected with the focal plane complex
    amplitude. It decomposes the spatial electric field into a discrete set of single-mode fiber

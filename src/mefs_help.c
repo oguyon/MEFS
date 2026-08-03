@@ -116,10 +116,10 @@ static void print_overview(void)
     printf("    %s1.%s %sCoronagraph%s"
            "   ~10^7 contrast suppression\n",
            c_yellow, c_reset, c_b_green, c_reset);
-    printf("    %s2.%s %sPhotonic IC%s"
-           "    Lantern + nulling chip for\n"
+    printf("    %s2.%s %sPhotonics%s"
+           "     Lantern and/or chip for\n"
            "                     "
-           "modal decomposition & WFS\n\n",
+           "nulling & modal decomposition\n\n",
            c_yellow, c_reset, c_b_green, c_reset);
 }
 
