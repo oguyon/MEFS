@@ -1,3 +1,4 @@
 build/
+wdir/
 site/
 *.fits
