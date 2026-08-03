@@ -6,9 +6,10 @@
 #include <getopt.h>
 
 /* Option character codes for long options */
-#define OPT_TYPE  2000
-#define OPT_INNER 2001
-#define OPT_OUTER 2002
+#define OPT_TYPE      2000
+#define OPT_INNER     2001
+#define OPT_OUTER     2002
+#define OPT_BENCHMARK 2003
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -83,7 +84,11 @@ void print_help(
            c_green, c_reset, c_magenta, c_reset);
     printf("  %s-a%s                           Append to output file instead of overwriting.\n",
            c_green, c_reset);
-    printf("  %s-h, --help%s                   Show this help message.\n\n",
+    printf("  %s--benchmark%s                  "
+           "Generate 4 default benchmark scenes.\n",
+           c_green, c_reset);
+    printf("  %s-h, --help%s                   "
+           "Show this help message.\n\n",
            c_green, c_reset);
 
     printf("%sEXAMPLES%s\n", c_cyan, c_reset);
@@ -220,26 +225,7 @@ int main(
 {
     init_colors();
 
-    if (argc == 1)
-    {
-        printf("%sNo options specified. Generating default benchmark scenes...%s\n",
-               c_yellow, c_reset);
-        int st = 0;
-        st |= generate_scene_file("scene.star.txt", "disk", 0.0, 0.0, 0.0075,
-                                  1e10, 0.001, 0.0, 0.0, 0.0, 0.0);
-        st |= generate_scene_file("scene.zodi.txt", "disk", 0.0, 0.0, 8.0,
-                                  200.0, 0.1, 0.0, 0.0, 0.0, 0.0);
-        st |= generate_scene_file("scene.exozodi.txt", "exozodi", 0.0, 0.0, 0.0,
-                                  200.0, 0.1, 0.15, 3.0, -2.0, 60.0);
-        st |= generate_scene_file("scene.planet.txt", "planet", 1.0, 0.0, 0.0,
-                                  1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-        if (st == 0)
-        {
-            printf("%sAll default scenes successfully generated.%s\n",
-                   c_green, c_reset);
-        }
-        return st;
-    }
+    int benchmark_mode = (argc == 1) ? 1 : 0;
 
     char *type = NULL;
     double x = 0.0;
@@ -255,11 +241,12 @@ int main(
     int append_mode = 0;
 
     static struct option long_options[] = {
-        {"type", required_argument, 0, OPT_TYPE},
-        {"inner", required_argument, 0, OPT_INNER},
-        {"outer", required_argument, 0, OPT_OUTER},
+        {"type",        required_argument, 0, OPT_TYPE},
+        {"inner",       required_argument, 0, OPT_INNER},
+        {"outer",       required_argument, 0, OPT_OUTER},
+        {"benchmark",   no_argument,       0, OPT_BENCHMARK},
         {"inclination", required_argument, 0, 'i'},
-        {"help", no_argument, 0, 'h'},
+        {"help",        no_argument,       0, 'h'},
         {0, 0, 0, 0}
     };
 
@@ -306,6 +293,9 @@ int main(
             case 'a':
                 append_mode = 1;
                 break;
+            case OPT_BENCHMARK:
+                benchmark_mode = 1;
+                break;
             case 'h':
                 print_help(argv[0]);
                 return 0;
@@ -315,9 +305,43 @@ int main(
         }
     }
 
+    /* Generate default benchmark scenes */
+    if (benchmark_mode)
+    {
+        printf("%sGenerating default benchmark "
+               "scenes...%s\n",
+               c_yellow, c_reset);
+        int st = 0;
+        st |= generate_scene_file(
+            "scene.star.txt", "disk",
+            0.0, 0.0, 0.0075,
+            1e10, 0.001, 0.0, 0.0, 0.0, 0.0);
+        st |= generate_scene_file(
+            "scene.zodi.txt", "disk",
+            0.0, 0.0, 8.0,
+            200.0, 0.1, 0.0, 0.0, 0.0, 0.0);
+        st |= generate_scene_file(
+            "scene.exozodi.txt", "exozodi",
+            0.0, 0.0, 0.0,
+            200.0, 0.1, 0.15, 3.0, -2.0, 60.0);
+        st |= generate_scene_file(
+            "scene.planet.txt", "planet",
+            1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        if (st == 0)
+        {
+            printf("%sAll default scenes successfully "
+                   "generated.%s\n",
+                   c_green, c_reset);
+        }
+        return st;
+    } // if (benchmark_mode)
+
     if (type == NULL)
     {
-        fprintf(stderr, "%sERROR: Option --type is required (planet, disk, or exozodi).%s\n\n",
+        fprintf(stderr,
+                "%sERROR: Option --type is required "
+                "(planet, disk, or exozodi).%s\n\n",
                 c_b_red, c_reset);
         print_help(argv[0]);
         return 1;
