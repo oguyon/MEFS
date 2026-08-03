@@ -14,7 +14,7 @@ After making changes to source or CMake configuration:
    ```
 2. Verify by running the binaries:
    ```bash
-   ./mefs_psf
+   ./mefs-psf
    ```
 
 ## 2. Regression Testing

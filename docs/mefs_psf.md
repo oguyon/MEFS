@@ -1,6 +1,6 @@
-# Scene Simulation (`mefs_psf`)
+# Scene Simulation (`mefs-psf`)
 
-The `mefs_psf` program is the core simulation engine of the MEFS toolkit. It performs Fourier
+The `mefs-psf` program is the core simulation engine of the MEFS toolkit. It performs Fourier
 optical propagation of point sources through an unobstructed circular pupil, an optional starlight
 mode subtraction coronagraph, and an Integral Field Spectrograph (IFS) consisting of a lenslet
 array, pinhole mask, and dispersion optics.
@@ -9,14 +9,14 @@ array, pinhole mask, and dispersion optics.
 
 ## Command Line Options
 
-Run `mefs_psf --help` to display the help page.
+Run `mefs-psf --help` to display the help page.
 
 ```
 NAME
-  mefs_psf - Fourier optical simulation of coronagraphic PSFs and IFS instruments.
+  mefs-psf - Fourier optical simulation of coronagraphic PSFs and IFS instruments.
 
 USAGE
-  mefs_psf [OPTIONS]
+  mefs-psf [OPTIONS]
 
 OPTIONS
   -i <file>                   Input fits file (optional).
@@ -63,14 +63,14 @@ represents a point source with three space-separated values:
 ```
 
 #### Individual Scene Processing
-If a file is provided (e.g. `./mefs_psf --scene scene.planet.txt`), `mefs_psf` simulates all sources
+If a file is provided (e.g. `./mefs-psf --scene scene.planet.txt`), `mefs-psf` simulates all sources
 in the file, aggregates the output intensities in memory, and writes:
 - `psf_im.fits`: Direct focal plane PSF intensity map.
 - `ifsraw_im.fits`: Arranged IFS detector plane raw intensity.
 - `ifs_im.fits`: Integrated and normalized lenslet flux map.
 
 #### Batch Scene Mode
-If `--scene` is run **without arguments** (or simply `./mefs_psf -S`), the program enters batch
+If `--scene` is run **without arguments** (or simply `./mefs-psf -S`), the program enters batch
 mode:
 1. **Glob Scanning**: Scans the current working directory for files matching `scene.*.txt`.
 2. **Skip-on-Exist Check**: Checks if the log summary file `scene.<name>.log` exists. If present and
