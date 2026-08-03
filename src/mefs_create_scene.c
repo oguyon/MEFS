@@ -85,8 +85,24 @@ void print_help(
     printf("  %s-a%s                           Append to output file instead of overwriting.\n",
            c_green, c_reset);
     printf("  %s--benchmark%s                  "
-           "Generate 4 default benchmark scenes.\n",
+           "Generate 4 default benchmark scenes:\n",
            c_green, c_reset);
+    printf("     %sscene.star.txt%s      "
+           "Stellar disk  r=0.0075 l/D  "
+           "flux=1e10\n",
+           c_yellow, c_reset);
+    printf("     %sscene.zodi.txt%s      "
+           "Zodiacal dust r=8.0 l/D     "
+           "flux=200\n",
+           c_yellow, c_reset);
+    printf("     %sscene.exozodi.txt%s   "
+           "Exozodi disk  0.15-3.0 l/D  "
+           "flux=200  inc=60 deg\n",
+           c_yellow, c_reset);
+    printf("     %sscene.planet.txt%s    "
+           "Point planet  (1.0, 0.0) l/D"
+           " flux=1\n",
+           c_yellow, c_reset);
     printf("  %s-h, --help%s                   "
            "Show this help message.\n\n",
            c_green, c_reset);
