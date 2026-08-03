@@ -127,6 +127,14 @@ static void print_executables(void)
 {
     section("\xf0\x9f\x94\xa7", "EXECUTABLES");
 
+    /* mefs-create-scene */
+    printf("  %s\xe2\x96\xb6%s  %smefs-create-scene%s\n",
+           c_yellow, c_reset, c_b_green, c_reset);
+    printf("     Astronomical scene generator.\n");
+    printf("     Creates point-source lists for"
+           " planets, zodiacal\n");
+    printf("     dust, and exozodiacal disks.\n\n");
+
     /* mefs-psf */
     printf("  %s\xe2\x96\xb6%s  %smefs-psf%s\n",
            c_yellow, c_reset, c_b_green, c_reset);
@@ -135,14 +143,6 @@ static void print_executables(void)
            " IFS lenslet\n");
     printf("     array, and MEFS matched-filter"
            " projection.\n\n");
-
-    /* mefs-create-scene */
-    printf("  %s\xe2\x96\xb6%s  %smefs-create-scene%s\n",
-           c_yellow, c_reset, c_b_green, c_reset);
-    printf("     Astronomical scene generator.\n");
-    printf("     Creates point-source lists for"
-           " planets, zodiacal\n");
-    printf("     dust, and exozodiacal disks.\n\n");
 
     /* mefs-score */
     printf("  %s\xe2\x96\xb6%s  %smefs-score%s\n",
@@ -182,6 +182,34 @@ static void print_options_reference(void)
     section("\xf0\x9f\x93\x8b",
             "QUICK OPTION REFERENCE");
 
+    /* ── mefs-create-scene ── */
+    printf("  %smefs-create-scene%s %s[OPTIONS]%s\n",
+           c_b_green, c_reset, c_magenta, c_reset);
+
+    printf("    %s--type%s %-8s "
+           "%splanet | disk | exozodi%s\n",
+           c_green, c_reset, "<type>",
+           c_grey, c_reset);
+    printf("    %s-x%s / %s-y%s %-6s "
+           "%sPosition (lam/D)%s\n",
+           c_green, c_reset, c_green, c_reset,
+           "<val>", c_grey, c_reset);
+    printf("    %s-r%s %-12s %sDisk radius (lam/D)%s\n",
+           c_green, c_reset, "<val>",
+           c_grey, c_reset);
+    printf("    %s-f%s %-12s %sTotal flux%s\n",
+           c_green, c_reset, "<val>",
+           c_grey, c_reset);
+    printf("    %s-o%s %-12s %sOutput scene file%s\n",
+           c_green, c_reset, "<file>",
+           c_grey, c_reset);
+    printf("    %s-a%s %-12s %sAppend mode%s\n",
+           c_green, c_reset, "",
+           c_grey, c_reset);
+    printf("    %s-h%s %-12s %sFull help%s\n\n",
+           c_green, c_reset, "",
+           c_grey, c_reset);
+
     /* ── mefs-psf ── */
     printf("  %smefs-psf%s %s[OPTIONS]%s\n",
            c_b_green, c_reset, c_magenta, c_reset);
@@ -210,34 +238,6 @@ static void print_options_reference(void)
            c_green, c_reset, "<file>",
            c_grey, c_reset);
     printf("    %s-M%s %-12s %sEnable MEFS projection%s\n",
-           c_green, c_reset, "",
-           c_grey, c_reset);
-    printf("    %s-h%s %-12s %sFull help%s\n\n",
-           c_green, c_reset, "",
-           c_grey, c_reset);
-
-    /* ── mefs-create-scene ── */
-    printf("  %smefs-create-scene%s %s[OPTIONS]%s\n",
-           c_b_green, c_reset, c_magenta, c_reset);
-
-    printf("    %s--type%s %-8s "
-           "%splanet | disk | exozodi%s\n",
-           c_green, c_reset, "<type>",
-           c_grey, c_reset);
-    printf("    %s-x%s / %s-y%s %-6s "
-           "%sPosition (lam/D)%s\n",
-           c_green, c_reset, c_green, c_reset,
-           "<val>", c_grey, c_reset);
-    printf("    %s-r%s %-12s %sDisk radius (lam/D)%s\n",
-           c_green, c_reset, "<val>",
-           c_grey, c_reset);
-    printf("    %s-f%s %-12s %sTotal flux%s\n",
-           c_green, c_reset, "<val>",
-           c_grey, c_reset);
-    printf("    %s-o%s %-12s %sOutput scene file%s\n",
-           c_green, c_reset, "<file>",
-           c_grey, c_reset);
-    printf("    %s-a%s %-12s %sAppend mode%s\n",
            c_green, c_reset, "",
            c_grey, c_reset);
     printf("    %s-h%s %-12s %sFull help%s\n\n",

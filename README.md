@@ -29,12 +29,12 @@ at the science detector, achieving extreme precision ($\sim 50\ \mu\text{as}$ pe
 
 The toolkit compiles into three core executables:
 
-* **[mefs-psf](docs/mefs_psf.md)**:
-  Simulates the optical propagation, coronagraph mask, photonic lantern injection, modal nulling,
-  and spectrograph coupling.
 * **[mefs-create-scene](docs/mefs_create_scene.md)**:
   Generates synthetic astronomical scenes (point sources for stars/planets, disk dust distributions
   for zodiacal and exozodiacal light).
+* **[mefs-psf](docs/mefs_psf.md)**:
+  Simulates the optical propagation, coronagraph mask, photonic lantern injection, modal nulling,
+  and spectrograph coupling.
 * **[mefs-score](docs/mefs_score.md)**:
   Evaluates spectroscopic signal-to-noise ratios (SNR), coupled/uncoupled flux metrics, and overall
   instrument performance based on simulation logs.
