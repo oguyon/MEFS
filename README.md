@@ -21,7 +21,7 @@ and high-precision wavefront self-calibration:
    control and self-calibration.
 
 This spatial-spectral modal decomposition distinguishes exoplanet light from starlight speckles
-at the science detector, achieving extreme precision ($\sim 50\ \mu\text{as}$ per spectral bin).
+at the science detector.
 
 ---
 
