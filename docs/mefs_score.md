@@ -1,6 +1,6 @@
-# Performance Scorer (`mefs_score`)
+# Performance Scorer (`mefs-score`)
 
-The `mefs_score` utility reads the planet flux map and the combined scene sum flux map FITS files,
+The `mefs-score` utility reads the planet flux map and the combined scene sum flux map FITS files,
 extracts WCS coordinates to map pixels to physical angular separation in \(\lambda/D\), sorts the
 pixels by decreasing planet intensity, and writes a structured table containing cumulative flux
 integrals.
@@ -12,14 +12,14 @@ zodiacal dust, exozodi light, and coronagraphic starlight leaks.
 
 ## Command Line Options
 
-Run `mefs_score --help` to view options.
+Run `mefs-score --help` to view options.
 
 ```
 NAME
-  mefs_score - Grade planet detection contrast metric from IFS outputs.
+  mefs-score - Grade planet detection contrast metric from IFS outputs.
 
 USAGE
-  mefs_score [OPTIONS]
+  mefs-score [OPTIONS]
 
 OPTIONS
   -p, --planet <file>        Planet flux map FITS file (default: ifs_im.planet.fits).
@@ -31,7 +31,7 @@ OPTIONS
 
 ## Automatic Coordinate Extraction (WCS)
 
-Unlike other tools that require manual coordinate scales to be passed as inputs, `mefs_score` is
+Unlike other tools that require manual coordinate scales to be passed as inputs, `mefs-score` is
 header-driven and reads coordinates directly from the `planet` FITS file:
 - **Pixel Scale (`CDELT1`)**: Read from the WCS headers as the angular lenslet size in \(\lambda/D\)
   (defaults to `0.5` \(\lambda/D\) if missing).

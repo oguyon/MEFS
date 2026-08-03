@@ -58,7 +58,7 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Scene Simulation (mefs_psf): mefs_psf.md
-  - Scene Generator (mefs_create_scene): mefs_create_scene.md
-  - Performance Scorer (mefs_score): mefs_score.md
+  - Scene Simulation (mefs-psf): mefs_psf.md
+  - Scene Generator (mefs-create-scene): mefs_create_scene.md
+  - Performance Scorer (mefs-score): mefs_score.md
   - Physical & Optical Theory: theory.md

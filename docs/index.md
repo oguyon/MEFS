@@ -19,11 +19,11 @@ chip (PNC)**.
 
 ```mermaid
 graph TD
-    A["mefs_create_scene"] -->|Generates Scenes| B["scene.*.txt"]
-    B -->|Point Sources Input| C["mefs_psf"]
+    A["mefs-create-scene"] -->|Generates Scenes| B["scene.*.txt"]
+    B -->|Point Sources Input| C["mefs-psf"]
     C -->|Simulates Optics| D["ifs_im.planet.fits"]
     C -->|Simulates Optics| E["ifs_im.scenesum.fits"]
-    D -->|Contrast Input| F["mefs_score"]
+    D -->|Contrast Input| F["mefs-score"]
     E -->|Contrast Input| F
     F -->|Grades Metrics| G["score.txt"]
 ```
@@ -64,14 +64,14 @@ The MEFS instrument operates via five sequential stages:
 
 The simulation suite mimics this optical pipeline through three core executables:
 
-### 1. `mefs_create_scene`
+### 1. `mefs-create-scene`
 A scene generator that constructs astronomical targets as collections of point sources:
 * **Planets**: Point sources with customizable off-axis offsets ($x, y$ in $\lambda/D$) and fluxes.
 * **Circumstellar Dust Disks**: Power-law exozodi disks projected at a realistic inclined geometry
   (defaulting to the statistical median inclination of $60.0^{\circ}$).
 * **Stellar Disks**: Uniform circular disks modeling resolved stellar photospheres.
 
-### 2. `mefs_psf`
+### 2. `mefs-psf`
 A multi-threaded, OpenMP-accelerated physical optics propagator:
 * Simulates wavefront propagation through custom pupil designs and coronagraph layouts.
 * Simulates the Integral Field Spectrograph (IFS) lenslet array and pinhole masks.
@@ -79,7 +79,7 @@ A multi-threaded, OpenMP-accelerated physical optics propagator:
 * Integrates World Coordinate System (WCS) headers directly into output FITS arrays.
 * Supports incremental batch runs (skipping pre-computed files while maintaining correct sums).
 
-### 3. `mefs_score`
+### 3. `mefs-score`
 An analysis and evaluation utility:
 * Reads simulated exoplanet flux maps and combined background sums.
 * Translates pixel coordinates using WCS headers to match planet locations.

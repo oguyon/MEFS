@@ -9,7 +9,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(CFITSIO REQUIRED cfitsio)
 pkg_check_modules(FFTW3 REQUIRED fftw3)
 
-add_executable(mefs_psf
+add_executable(mefs-psf
     src/mefs_psf.c
     src/mefs_utils.c
     src/mefs_fits.c
@@ -18,20 +18,20 @@ add_executable(mefs_psf
 )
 
 # Include paths
-target_include_directories(mefs_psf PRIVATE
+target_include_directories(mefs-psf PRIVATE
     ${CFITSIO_INCLUDE_DIRS}
     ${FFTW3_INCLUDE_DIRS}
 )
 
 # Link directories and libraries
-target_link_directories(mefs_psf PRIVATE
+target_link_directories(mefs-psf PRIVATE
     ${CFITSIO_LIBRARY_DIRS}
     ${FFTW3_LIBRARY_DIRS}
 )
 
 find_package(OpenMP REQUIRED)
 
-target_link_libraries(mefs_psf PRIVATE
+target_link_libraries(mefs-psf PRIVATE
     ${CFITSIO_LIBRARIES}
     ${FFTW3_LIBRARIES}
     OpenMP::OpenMP_C
@@ -39,18 +39,21 @@ target_link_libraries(mefs_psf PRIVATE
 )
 
 # Scene generator tool
-add_executable(mefs_create_scene src/mefs_create_scene.c)
-target_link_libraries(mefs_create_scene PRIVATE m)
+add_executable(mefs-create-scene src/mefs_create_scene.c)
+target_link_libraries(mefs-create-scene PRIVATE m)
 
 # Score grading tool
-add_executable(mefs_score src/mefs_score.c)
-target_include_directories(mefs_score PRIVATE
+add_executable(mefs-score src/mefs_score.c)
+target_include_directories(mefs-score PRIVATE
     ${CFITSIO_INCLUDE_DIRS}
 )
-target_link_directories(mefs_score PRIVATE
+target_link_directories(mefs-score PRIVATE
     ${CFITSIO_LIBRARY_DIRS}
 )
-target_link_libraries(mefs_score PRIVATE
+target_link_libraries(mefs-score PRIVATE
     ${CFITSIO_LIBRARIES}
     m
 )
+
+# Top-level help page
+add_executable(mefs-help src/mefs_help.c)

@@ -29,13 +29,13 @@ at the science detector, achieving extreme precision ($\sim 50\ \mu\text{as}$ pe
 
 The toolkit compiles into three core executables:
 
-* **[mefs_psf](docs/mefs_psf.md)**:
+* **[mefs-psf](docs/mefs_psf.md)**:
   Simulates the optical propagation, coronagraph mask, photonic lantern injection, modal nulling,
   and spectrograph coupling.
-* **[mefs_create_scene](docs/mefs_create_scene.md)**:
+* **[mefs-create-scene](docs/mefs_create_scene.md)**:
   Generates synthetic astronomical scenes (point sources for stars/planets, disk dust distributions
   for zodiacal and exozodiacal light).
-* **[mefs_score](docs/mefs_score.md)**:
+* **[mefs-score](docs/mefs_score.md)**:
   Evaluates spectroscopic signal-to-noise ratios (SNR), coupled/uncoupled flux metrics, and overall
   instrument performance based on simulation logs.
 
@@ -60,15 +60,15 @@ make -j$(nproc)
 ### Running Simulations
 1. Generate the standard benchmark scene files:
    ```bash
-   ./build/mefs_create_scene --benchmark
+   ./build/mefs-create-scene --benchmark
    ```
 2. Run the PSF simulation using the planet scene:
    ```bash
-   ./build/mefs_psf --scene scene.planet.txt --mefs_x 1.0
+   ./build/mefs-psf --scene scene.planet.txt --mefs_x 1.0
    ```
 3. Evaluate the output SNR:
    ```bash
-   ./build/mefs_score --scene scene.planet.txt
+   ./build/mefs-score --scene scene.planet.txt
    ```
 
 ---

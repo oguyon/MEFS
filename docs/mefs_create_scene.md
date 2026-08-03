@@ -1,21 +1,21 @@
-# Scene Generator (`mefs_create_scene`)
+# Scene Generator (`mefs-create-scene`)
 
-The `mefs_create_scene` utility program generates simulated astronomical scenes as lists of
-normalized point sources in an ASCII file format. These files are directly consumed by the `mefs_psf`
+The `mefs-create-scene` utility program generates simulated astronomical scenes as lists of
+normalized point sources in an ASCII file format. These files are directly consumed by the `mefs-psf`
 simulation program.
 
 ---
 
 ## Command Line Options
 
-Run `mefs_create_scene --help` to view options.
+Run `mefs-create-scene --help` to view options.
 
 ```
 NAME
-  mefs_create_scene - Generate astronomical scene point source lists.
+  mefs-create-scene - Generate astronomical scene point source lists.
 
 USAGE
-  mefs_create_scene [OPTIONS]
+  mefs-create-scene [OPTIONS]
 
 OPTIONS
   -h, --help                  Show this help message.
@@ -37,7 +37,7 @@ OPTIONS
 
 ## Default Benchmark Scenes
 
-When run **without options** (simply `./mefs_create_scene`), the program automatically creates
+When run **without options** (simply `./mefs-create-scene`), the program automatically creates
 four standard benchmark files in the current working directory:
 
 1. **`scene.star.txt`**:

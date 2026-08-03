@@ -8,6 +8,7 @@ Maintain consistency with the existing MEFS codebase naming patterns.
 
 ## 1. Files & Folders
 - Use lowercase `snake_case` with underscores for C source/header files: e.g., `mefs_psf.c`, `fft_utils.c`.
+- Use lowercase `kebab-case` with hyphens for executable (binary) names: e.g., `mefs-psf`, `mefs-create-scene`.
 - Keep names descriptive and concise.
 
 ## 2. Functions
