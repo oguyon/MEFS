@@ -71,13 +71,4 @@ make -j$(nproc)
    ./build/mefs-score --scene scene.planet.txt
    ```
 
----
 
-## 4. References & Project Status
-
-MEFS technology is actively prototyped and demonstrated on-sky via the **SCExAO** instrument at the
-Subaru Telescope:
-- **GLINT (Photonic Nulling)**: On-sky demonstration (May 2025) showing active phase control, WFS/C
-  loop-closing, and $>80\%$ through-chip transmission.
-- **FIRST / Photonic Lantern**: Demonstrated spatial-spectral modal decomposition and sub-diffraction
-  limited astronomy (*Yoo Jung Kim et al. 2025 ApJL*).
