@@ -131,7 +131,8 @@ void print_usage(
            c_grey, c_reset, c_b_green, prog_name, c_reset);
 
     printf("%sOUTPUT FILES%s\n", c_cyan, c_reset);
-    printf("  %sSingle-source mode:%s\n",
+
+    printf("  %sPSF mode (default):%s\n",
            c_bold, c_reset);
     printf("    %spupil.fits%s              "
            "Pupil plane complex wavefront\n",
@@ -140,10 +141,11 @@ void print_usage(
            "Focal plane complex amplitude\n",
            c_yellow, c_reset);
     printf("    %spsf_intensity.fits%s      "
-           "Focal plane intensity (|E|^2)\n",
+           "Focal plane intensity (|E|^2)\n\n",
            c_yellow, c_reset);
 
-    printf("  %sIFS mode (-s):%s\n",
+    printf("  %sPSF + IFS mode (-s):%s"
+           "  above, plus:\n",
            c_bold, c_reset);
     printf("    %sifs_complex.fits%s        "
            "IFS detector complex amplitude\n",
@@ -152,7 +154,7 @@ void print_usage(
            "IFS detector intensity\n",
            c_yellow, c_reset);
     printf("    %sifs_flux.fits%s           "
-           "Lenslet-integrated flux array\n",
+           "Lenslet-integrated flux array\n\n",
            c_yellow, c_reset);
 
     printf("  %sScene batch mode (-S):%s\n",
@@ -160,14 +162,18 @@ void print_usage(
     printf("    %spsf_im.<name>.fits%s      "
            "Per-scene PSF intensity\n",
            c_yellow, c_reset);
+    printf("    %spsf_im.scenesum.fits%s    "
+           "Combined PSF sum\n",
+           c_yellow, c_reset);
+
+    printf("  %sScene batch + IFS (-S -s):%s"
+           "  above, plus:\n",
+           c_bold, c_reset);
     printf("    %sifsraw_im.<name>.fits%s   "
            "Per-scene raw IFS detector\n",
            c_yellow, c_reset);
     printf("    %sifs_im.<name>.fits%s      "
            "Per-scene IFS flux (with WCS)\n",
-           c_yellow, c_reset);
-    printf("    %spsf_im.scenesum.fits%s    "
-           "Combined PSF sum over all scenes\n",
            c_yellow, c_reset);
     printf("    %sifsraw_im.scenesum.fits%s "
            "Combined raw IFS sum\n",
@@ -177,6 +183,15 @@ void print_usage(
            c_yellow, c_reset);
     printf("    %sscene.<name>.log%s        "
            "Per-scene processing log\n\n",
+           c_yellow, c_reset);
+
+    printf("  %sMEFS mode (-S -M):%s\n",
+           c_bold, c_reset);
+    printf("    %smefs.<name>.txt%s         "
+           "Per-scene coupling data\n",
+           c_yellow, c_reset);
+    printf("    %smefs.log%s                "
+           "Combined coupling summary\n\n",
            c_yellow, c_reset);
 
     printf("%sCOLOR MODE%s\n", c_cyan, c_reset);
