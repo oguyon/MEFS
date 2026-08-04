@@ -110,25 +110,57 @@ void print_usage(
     printf("  %s--mefs_y%s %s<val>%s            MEFS projection reference mode Y coordinate\n",
            c_green, c_reset, c_magenta, c_reset);
     printf("                       in lambda/D (default: 0.0).\n");
-    printf("  %s-S, --scene%s %s<file>%s        Input ASCII scene definition file "
-           "(lines: x y flux; default: none).\n",
+    printf("  %s-S, --scene%s %s<file>%s        "
+           "Process a single scene file\n",
            c_green, c_reset, c_magenta, c_reset);
-    printf("  %s-h, --help%s                   Show this help message.\n\n",
+    printf("                       "
+           "(ASCII, one source per line:"
+           " x y flux).\n");
+    printf("  %s-S, --scene%s               "
+           "Auto-detect: glob all "
+           "%sscene.*.txt%s files\n",
+           c_green, c_reset,
+           c_yellow, c_reset);
+    printf("                       "
+           "in the current directory and "
+           "process each one.\n");
+    printf("                       "
+           "Existing outputs are skipped "
+           "(incremental).\n");
+    printf("  %s-h, --help%s                   "
+           "Show this help message.\n\n",
            c_green, c_reset);
 
     printf("%sEXAMPLES%s\n", c_cyan, c_reset);
     printf("  1. Run default IFS simulation:\n");
     printf("     %s$%s %s%s -s%s\n",
-           c_grey, c_reset, c_b_green, prog_name, c_reset);
-    printf("  2. Compute 3rd order coronagraph PSF off-axis:\n");
-    printf("     %s$%s %s%s -c 3 -x 2.0 -y 0.5%s\n",
-           c_grey, c_reset, c_b_green, prog_name, c_reset);
-    printf("  3. Run multi-source scene simulation:\n");
-    printf("     %s$%s %s%s -S scene.txt -s%s\n",
-           c_grey, c_reset, c_b_green, prog_name, c_reset);
-    printf("  4. Run scene list in MEFS projection mode:\n");
-    printf("     %s$%s %s%s -S scene.txt -s -M%s\n\n",
-           c_grey, c_reset, c_b_green, prog_name, c_reset);
+           c_grey, c_reset,
+           c_b_green, prog_name, c_reset);
+    printf("  2. Coronagraph PSF, off-axis:\n");
+    printf("     %s$%s %s%s -c 3 -x 2.0"
+           " -y 0.5%s\n",
+           c_grey, c_reset,
+           c_b_green, prog_name, c_reset);
+    printf("  3. Single scene file + IFS:\n");
+    printf("     %s$%s %s%s -S scene.planet.txt"
+           " -s%s\n",
+           c_grey, c_reset,
+           c_b_green, prog_name, c_reset);
+    printf("  4. Auto-detect all scene.*.txt"
+           " + IFS:\n");
+    printf("     %s$%s %s%s -S -s%s\n",
+           c_grey, c_reset,
+           c_b_green, prog_name, c_reset);
+    printf("  5. MEFS projection, single scene:\n");
+    printf("     %s$%s %s%s -S scene.planet.txt"
+           " -M --mefs_x 1.0%s\n",
+           c_grey, c_reset,
+           c_b_green, prog_name, c_reset);
+    printf("  6. MEFS projection, auto-detect"
+           " all scenes:\n");
+    printf("     %s$%s %s%s -S -M%s\n\n",
+           c_grey, c_reset,
+           c_b_green, prog_name, c_reset);
 
     printf("%sOUTPUT FILES%s\n", c_cyan, c_reset);
 
