@@ -1,0 +1,6 @@
+# Params: coro=3.000000 diam=25.600000 grid=512 ifs=1 lens_sz=0.350000 lens_cnt=32 fft=32 pin_dia=2.000000
+Scene Name: star
+Input Scene File: scene.star.txt
+Total Input Scene Flux: 1.000000000000031e+10
+Coronagraph Throughput: 6.144894125783058e-12 (0.000000%)
+IFS Throughput: 4.654662905530750e-12 (0.000000%)

@@ -1,0 +1,20 @@
+# MEFS Spectrograph Summary Report
+Scene: exozodi
+  Focal Plane Light: 1.856338222404571e+01
+  Coupled Light:     3.478443740760549e+00
+  Average Efficiency: 1.873820028472406e-01
+Scene: planet
+  Focal Plane Light: 6.856956716834395e-01
+  Coupled Light:     6.856956716834278e-01
+  Average Efficiency: 9.999999999999830e-01
+Scene: star
+  Focal Plane Light: 6.144894125783251e-02
+  Coupled Light:     8.529392315667170e-03
+  Average Efficiency: 1.388045447337952e-01
+Scene: zodi
+  Focal Plane Light: 1.927724104787981e+02
+  Coupled Light:     1.208247510515593e+00
+  Average Efficiency: 6.267740842761735e-03
+Planet Light Gathered: 6.856956716834278e-01
+Total Background Light: 4.695220643591809e+00
+Combined Spectrograph SNR: 2.955992236634195e-01

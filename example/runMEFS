@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+STARSIZE="0.02"
+PLANETSEP="1.5"
+CORONBMODE="3"
+LENSLETSIZE="0.35"
+
+../build/mefs-create-scene --benchmark --star_size ${STARSIZE}--planet_sep ${PLANETSEP}
+
+
+# MEFS mode
+#
+../build/mefs-psf --mefs --mefs_x ${PLANETSEP} -c ${CORONBMODE} -S
+
+# IFS mode
+#
+../build/mefs-psf --ifs -l ${LENSLETSIZE} -c ${CORONBMODE} -S
+
+
+../build/mefs-score --dark 0.002 -F 0.4 --sweep
+
+

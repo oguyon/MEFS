@@ -1,0 +1,6 @@
+# Params: coro=3.000000 diam=25.600000 grid=512 ifs=1 lens_sz=0.350000 lens_cnt=32 fft=32 pin_dia=2.000000
+Scene Name: zodi
+Input Scene File: scene.zodi.txt
+Total Input Scene Flux: 2.000000000000333e+02
+Coronagraph Throughput: 9.638620523938237e-01 (96.386205%)
+IFS Throughput: 4.655267028705848e-01 (46.552670%)
