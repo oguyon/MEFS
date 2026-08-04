@@ -9,7 +9,9 @@
 #define OPT_TYPE      2000
 #define OPT_INNER     2001
 #define OPT_OUTER     2002
-#define OPT_BENCHMARK 2003
+#define OPT_BENCHMARK  2003
+#define OPT_PLANET_SEP 2004
+#define OPT_STAR_SIZE  2005
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -88,8 +90,8 @@ void print_help(
            "Generate 4 default benchmark scenes:\n",
            c_green, c_reset);
     printf("     %sscene.star.txt%s      "
-           "Stellar disk  r=0.0075 l/D  "
-           "flux=1e10\n",
+           "Stellar disk  r=--star_size"
+           " l/D  flux=1e10\n",
            c_yellow, c_reset);
     printf("     %sscene.zodi.txt%s      "
            "Zodiacal dust r=8.0 l/D     "
@@ -97,12 +99,24 @@ void print_help(
            c_yellow, c_reset);
     printf("     %sscene.exozodi.txt%s   "
            "Exozodi disk  0.15-3.0 l/D  "
-           "flux=200  inc=60 deg\n",
+           "flux=100  inc=60 deg\n",
            c_yellow, c_reset);
     printf("     %sscene.planet.txt%s    "
-           "Point planet  (1.0, 0.0) l/D"
-           " flux=1\n",
+           "Point planet at --planet_sep"
+           " l/D  flux=1\n",
            c_yellow, c_reset);
+    printf("  %s--planet_sep%s %s<val>%s"
+           "            Planet separation"
+           " in l/D for benchmark"
+           " (default: 1.5).\n",
+           c_green, c_reset,
+           c_magenta, c_reset);
+    printf("  %s--star_size%s %s<val>%s"
+           "            Star disk radius"
+           " in l/D for benchmark"
+           " (default: 0.0075).\n",
+           c_green, c_reset,
+           c_magenta, c_reset);
     printf("  %s-h, --help%s                   "
            "Show this help message.\n\n",
            c_green, c_reset);
@@ -255,12 +269,16 @@ int main(
     double inclination_deg = -1.0;
     char *out_file = "scene.txt";
     int append_mode = 0;
+    double planet_sep = 1.5;
+    double star_size  = 0.0075;
 
     static struct option long_options[] = {
         {"type",        required_argument, 0, OPT_TYPE},
         {"inner",       required_argument, 0, OPT_INNER},
         {"outer",       required_argument, 0, OPT_OUTER},
         {"benchmark",   no_argument,       0, OPT_BENCHMARK},
+        {"planet_sep",  required_argument, 0, OPT_PLANET_SEP},
+        {"star_size",   required_argument, 0, OPT_STAR_SIZE},
         {"inclination", required_argument, 0, 'i'},
         {"help",        no_argument,       0, 'h'},
         {0, 0, 0, 0}
@@ -312,6 +330,12 @@ int main(
             case OPT_BENCHMARK:
                 benchmark_mode = 1;
                 break;
+            case OPT_PLANET_SEP:
+                planet_sep = atof(optarg);
+                break;
+            case OPT_STAR_SIZE:
+                star_size = atof(optarg);
+                break;
             case 'h':
                 print_help(argv[0]);
                 return 0;
@@ -330,7 +354,7 @@ int main(
         int st = 0;
         st |= generate_scene_file(
             "scene.star.txt", "disk",
-            0.0, 0.0, 0.0075,
+            0.0, 0.0, star_size,
             1e10, 0.001, 0.0, 0.0, 0.0, 0.0);
         st |= generate_scene_file(
             "scene.zodi.txt", "disk",
@@ -339,10 +363,10 @@ int main(
         st |= generate_scene_file(
             "scene.exozodi.txt", "exozodi",
             0.0, 0.0, 0.0,
-            200.0, 0.1, 0.15, 3.0, -2.0, 60.0);
+            100.0, 0.1, 0.15, 3.0, -2.0, 60.0);
         st |= generate_scene_file(
             "scene.planet.txt", "planet",
-            1.0, 0.0, 0.0,
+            planet_sep, 0.0, 0.0,
             1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         if (st == 0)
         {
