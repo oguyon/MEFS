@@ -199,22 +199,37 @@ int main(
     }
 
     /* Load pixel values */
+    printf("Reading planet flux map:   %s%s%s\n",
+           c_yellow, planet_file, c_reset);
     int p_rows = 0, p_cols = 0;
-    double *planet_data = read_fits_2d(planet_file, &p_rows, &p_cols);
+    double *planet_data = read_fits_2d(
+        planet_file, &p_rows, &p_cols);
     if (planet_data == NULL)
     {
-        fprintf(stderr, "ERROR: Failed to load planet FITS file: %s\n", planet_file);
+        fprintf(stderr,
+                "ERROR: Failed to load planet "
+                "FITS file: %s\n", planet_file);
         return 1;
     }
+    printf("  -> %dx%d pixels\n",
+           p_cols, p_rows);
 
+    printf("Reading scenesum flux map: %s%s%s\n",
+           c_yellow, scenesum_file, c_reset);
     int s_rows = 0, s_cols = 0;
-    double *scenesum_data = read_fits_2d(scenesum_file, &s_rows, &s_cols);
+    double *scenesum_data = read_fits_2d(
+        scenesum_file, &s_rows, &s_cols);
     if (scenesum_data == NULL)
     {
-        fprintf(stderr, "ERROR: Failed to load scenesum FITS file: %s\n", scenesum_file);
+        fprintf(stderr,
+                "ERROR: Failed to load scenesum "
+                "FITS file: %s\n",
+                scenesum_file);
         free(planet_data);
         return 1;
     }
+    printf("  -> %dx%d pixels\n",
+           s_cols, s_rows);
 
     if (p_rows != s_rows || p_cols != s_cols)
     {
@@ -227,7 +242,10 @@ int main(
 
     int M = p_rows;
 
-    /* Extract WCS header coordinates from the planet FITS image */
+    /* Extract WCS header coordinates
+       from the planet FITS image */
+    printf("Extracting WCS from:      %s%s%s\n",
+           c_yellow, planet_file, c_reset);
     double cdelt1 = 0.5;
     double crpix1 = (M + 1) / 2.0;
     double crpix2 = (M + 1) / 2.0;
@@ -251,6 +269,9 @@ int main(
             status = 0;
         }
         fits_close_file(fptr, &status);
+        printf("  -> CDELT1=%.4f l/D  "
+               "CRPIX=(%.1f, %.1f)\n",
+               cdelt1, crpix1, crpix2);
     }
     else
     {
@@ -287,12 +308,19 @@ int main(
     free(scenesum_data);
 
     /* Sort by decreasing planet intensity */
-    qsort(pixels, total_pixels, sizeof(PixelScore), compare_pixels);
+    printf("Sorting %d pixels by planet "
+           "intensity...\n", total_pixels);
+    qsort(pixels, total_pixels,
+          sizeof(PixelScore), compare_pixels);
 
+    printf("Writing score output:     %s%s%s\n",
+           c_yellow, out_file, c_reset);
     FILE *out = fopen(out_file, "w");
     if (out == NULL)
     {
-        fprintf(stderr, "ERROR: Could not open output file %s\n", out_file);
+        fprintf(stderr,
+                "ERROR: Could not open output "
+                "file %s\n", out_file);
         free(pixels);
         return 1;
     }
